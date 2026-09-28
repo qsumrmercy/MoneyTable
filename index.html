@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица для расчета трат.</title>
+    <link rel="stylesheet" href="style_main.css">
+</head>
+<body>
+    <div class="background">
+        <header class="container">
+            <div class="logo"><div class="ruble">₽</div>Бюджет</div>
+            <nav class="nav_menu">
+                <ul>
+                    <li class="active"><a href="#">Обзор</a></li>
+                    <li><a href="#">Доходы</a></li>
+                    <li><a href="#">Расходы</a></li>
+                    <li><a href="#">Отчёты</a></li>
+                </ul>
+            </nav>
+            <div class="month">
+                <button class="change" id="prevMonthBtn" aria-label="Предыдущий месяц">&lt;</button>
+                <span class="month_selected" id="monthSelected">Сентябрь 2026</span>
+                <button class="change" id="nextMonthBtn" aria-label="Следующий месяц">&gt;</button>
+            </div>
+            <button class="add-operation" id="addOperationBtn">Добавить операцию</button>
+            <div class="account" id="accountBtn" role="button" tabindex="0" title="Профили">Я</div>
+        </header>
+        <main class="hero">
+            <div class="hero-container">
+                <div class="hero-header">
+
+                    <div class="text-group">
+                        <h1 class="current-month" id="currentMonthTitle">Сентябрь 2026</h1>
+                        <h2 class="info">Доходы, расходы и остаток на месяц</h2>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="export" id="exportBtn">Экспорт</button>
+                        <button class="category" id="categoriesBtn">Категории</button>
+                    </div>
+
+                </div>
+
+                <div class="stats">
+
+                    <div class="income">
+                        <span class="card-text">Доходы</span>
+                        <h1 class="sum" id="incomeSum">0 ₽</h1>
+                        <span class="plan-month" id="incomePlanText">План на месяц: 95 000 ₽</span>
+                    </div>
+
+                    <div class="expenses">
+                        <span class="card-text">Расходы</span>
+                        <h1 class="sum" id="expenseSum">0 ₽</h1>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="expenseProgress"></div>
+                        </div>
+                        <span class="comment" id="expenseComment">0% от плана 60 000 ₽</span>
+                    </div>
+
+                    <div class="balance">
+                        <span class="card-text">Остаток</span>
+                        <h1 class="remain" id="balanceSum">0 ₽</h1>
+                        <span class="comment">Текущий остаток на месяц</span>
+                    </div>
+
+                </div>
+
+                <div class="table-block">
+                    <div class="table-toolbar">
+                        <h2 class="table-title">Операции месяца</h2>
+                        <div class="filters">
+                            <button class="filter-chip active" data-filter="all">Все</button>
+                            <button class="filter-chip" data-filter="income">Доходы</button>
+                            <button class="filter-chip" data-filter="expense">Расходы</button>
+                        </div>
+                    </div>
+
+                    <div class="table-columns">
+                        <span class="col-date">Дата</span>
+                        <span class="col-category">Категория</span>
+                        <span class="col-description">Описание</span>
+                        <span class="col-type">Тип</span>
+                        <span class="col-sum">Сумма</span>
+                        <span class="col-actions"></span>
+                    </div>
+
+                    <div class="table-body" id="tableBody">
+                        <div class="table-empty">Операций пока нет — добавьте первую</div>
+                    </div>
+
+                    <button class="add-row" id="addRowBtn">+ Добавить строку</button>
+                </div>
+            </div>
+        </main>
+
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Новая операция</h2>
+                    <button type="button" class="modal-close" id="modalClose">&times;</button>
+                </div>
+
+                <form class="modal-form" id="operationForm" novalidate>
+                    <div class="form-group">
+                        <label>Тип операции</label>
+                        <div class="type-toggle">
+                            <button type="button" class="type-option active" data-type="income">Доход</button>
+                            <button type="button" class="type-option" data-type="expense">Расход</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="opCategory">Категория</label>
+                        <div class="category-row">
+                            <select id="opCategory">
+                                <option value="" disabled selected>Выберите категорию</option>
+                            </select>
+                            <button type="button" class="category-add-btn" id="categoryAddBtn" title="Добавить категорию">+</button>
+                        </div>
+                        <div class="new-category-row" id="newCategoryRow">
+                            <input type="text" id="newCategoryInput" placeholder="Название категории" autocomplete="off">
+                            <button type="button" class="category-confirm-btn" id="categoryConfirmBtn">Добавить</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="opDate">Дата</label>
+                        <input type="text" id="opDate" placeholder="дд.мм.гг" inputmode="numeric" maxlength="8" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="opSum">Сумма</label>
+                        <div class="sum-input-wrap">
+                            <input type="text" id="opSum" placeholder="0" inputmode="numeric" autocomplete="off">
+                            <span class="currency-suffix">₽</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="opDescription">Описание</label>
+                        <textarea id="opDescription" rows="3" placeholder="Например, аренда квартиры"></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="modal-delete" id="modalDelete">Удалить</button>
+                        <button type="button" class="modal-cancel" id="modalCancel">Отмена</button>
+                        <button type="submit" class="modal-submit" id="modalSubmit">Добавить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="categoryOverlay">
+            <div class="modal category-modal">
+                <div class="modal-header">
+                    <h2>Категории</h2>
+                    <button type="button" class="modal-close" id="categoryModalClose">&times;</button>
+                </div>
+
+                <div class="category-list" id="categoryList">
+                    <div class="category-list-empty" id="categoryListEmpty">Пока нет ни одной категории — добавьте её через окно операции</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="profileOverlay">
+            <div class="modal profile-modal">
+                <div class="modal-header">
+                    <h2>Профили</h2>
+                    <button type="button" class="modal-close" id="profileModalClose">&times;</button>
+                </div>
+
+                <div class="profile-list" id="profileList"></div>
+
+                <button type="button" class="profile-add-btn" id="profileAddBtn">+ Добавить профиль</button>
+                <div class="new-profile-row" id="newProfileRow">
+                    <input type="text" id="newProfileInput" placeholder="Имя профиля" maxlength="30" autocomplete="off">
+                    <button type="button" class="category-confirm-btn" id="newProfileConfirmBtn">Добавить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+        <script src="script_main.js" defer></script>
+    </div>
+</body>
+</html>
